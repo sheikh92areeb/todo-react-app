@@ -5,22 +5,17 @@ import { FaEdit } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
 
 function App() {
-	const [todo, setTodo] = useState("")
-	const [todos, setTodos] = useState([])
 	const [showFinished, setShowFinished] = useState(true)
+	const [todo, setTodo] = useState("")
+	
+	const [todos, setTodos] = useState(() => {
+		const storedTodos = localStorage.getItem("todos");
+		return storedTodos ? JSON.parse(storedTodos) : [];
+	});
 
 	useEffect(() => {
-		let todoString = localStorage.getItem("todos")
-		if (todoString !== null) {
-			let todos = JSON.parse(todoString)
-			setTodos(todos)
-		}
-	}, [])
-
-
-	const saveToLS = () => {
-		localStorage.setItem("todos", JSON.stringify(todos))
-	}
+		localStorage.setItem("todos", JSON.stringify(todos));
+	}, [todos]);
 
 	const toggleFinished = () => {
 		setShowFinished(!showFinished)
@@ -29,21 +24,18 @@ function App() {
 	const handleAdd = () => {
 		setTodos([...todos, { id: uuidv4(), todo, isCompleted: false }])
 		setTodo("")
-		saveToLS()
-
 	}
+
 	const handleEdit = (e, id) => {
 		let t = todos.filter(item => item.id === id)
 		setTodo(t[0].todo)
 		let newTodos = todos.filter(item => item.id !== id)
 		setTodos(newTodos)
-		saveToLS()
 	}
 
 	const handleDelete = (e, id) => {
 		let newTodos = todos.filter(item => item.id !== id)
 		setTodos(newTodos)
-		saveToLS()
 	}
 
 	const handleChange = (e) => {
@@ -56,7 +48,6 @@ function App() {
 		let newTodos = [...todos]
 		newTodos[index].isCompleted = !newTodos[index].isCompleted
 		setTodos(newTodos)
-		saveToLS()
 	}
 
 	return (
